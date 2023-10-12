@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="myModule">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous" />
+    <style>
+      .table-container {
+        overflow-y: scroll; /* Kích hoạt thanh cuộn dọc */
+        border: 1px solid #ccc; /* Thêm viền để tạo đường viền cho vùng cuộn */
+        position: relative; /* Đặt vị trí của container là relative */
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container-fluid">
+        <a class="navbar-brand"
+          >Đạo Tràng Online<span class="text-primary"></span
+        ></a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNavDropdown"
+          aria-controls="navbarNavDropdown"
+          aria-expanded="false"
+          aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+          <ul class="navbar-nav mx-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="#/user/home">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#/user/event">Ashram</a>
+            </li>
+          </ul>
+          <li
+            class="nav-item dropdown"
+            style="display: flex; padding-top: 10px; padding-bottom: 7px">
+            <a href="/src/pages/login.html" class="nav-link nav-icon-hover">
+              <img
+                src="/assets/images/1-1681185654548.jpg"
+                alt=""
+                width="35"
+                height="35"
+                class="rounded-circle" />
+            </a>
+            <div>
+              <h6 style="padding-top: 5px; padding-left: 10px">Đăng nhập</h6>
+            </div>
+          </li>
+        </div>
+      </div>
+    </nav>
+    <br />
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-4" ng-repeat="sk in listEvent">
+          <div class="card" style="height: 420px">
+            <img
+              src="https://mayqgo.com.vn/wp-content/uploads/2023/03/23.03.08.jpg"
+              style="width: 400px; height: 200px; padding: 10px" />
+            <p style="padding-left: 10px;">Thời gian diễn ra: {{sk.thoiGianBd}}</p>
+            <p style="padding-left: 10px;">Người chủ chì: {{sk.nguoiChuTri}}</p>
+            <p style="padding-left: 10px;">Người chủ chì: {{sk.noiToChuc}}</p>
+            <p style="padding-left: 10px;">Số lượng tham giá max: {{sk.soThanhVienMax}} ; Số người đã tham gia: {{sk.soThanhVienThamGia}}</p>
+            <center>
+              <button class="btn btn-outline-primary" style="width: 100px" ng-click="creataDon(sk.id)">
+                Đăng Ký
+              </button>
+            </center>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="/lib/angular.js"></script>
+    <script src="/lib/angular-route.js"></script>
+    <script src="../app.js"></script>
+    <script src="../routes.js"></script>
+    <script src="../controller/su-kien.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+      integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+      crossorigin="anonymous"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+      integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+      crossorigin="anonymous"></script>
+  </body>
+</html>

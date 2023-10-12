@@ -1,0 +1,8 @@
+1. Regular Expression (Biểu thức chính quy) hay gọi tắt là Regex là một dãy các ký tự liên tục,
+qua nó giúp người sử dụng tìm kiếm hoăc so khớp hoặc các thao tác liên quan tuân theo những quy tắc và cú pháp nhất định.
+2. Gói java.util.regex trong Java
+    Gói java.util.regex cung cấp các lớp và giao diện cơ bản sau:
+    Interface MatchResult
+    Lớp Matcher
+    Lớp Pattern
+    Lớp PatternSyntaxException
