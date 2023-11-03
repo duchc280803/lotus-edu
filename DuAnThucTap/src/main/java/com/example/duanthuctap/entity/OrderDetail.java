@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -22,8 +23,11 @@ public class OrderDetail {
     @Column(name = "order_detail_id")
     private Integer orderDetailId;
 
-    @Column(name = "price_total")
-    private Double priceTotal;
+    @Column(name = "unit_price")
+    private BigDecimal unitPrice;
+
+    @Column(name = "total_price")
+    private Long totalPrice;
 
     @Column(name = "quantity")
     private Integer quantity;
@@ -41,5 +45,9 @@ public class OrderDetail {
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
+
+    @ManyToOne
+    @JoinColumn(name = "oders_detail_id")
+    private StatusOderDetail statusOderDetail;
 
 }

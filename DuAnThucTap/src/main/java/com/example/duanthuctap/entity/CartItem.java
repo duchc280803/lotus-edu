@@ -24,6 +24,9 @@ public class CartItem {
     @Column(name = "quantity")
     private Integer quantity;
 
+    @Column(name = "status")
+    private Integer status;
+
     @Column(name = "created_at")
     private LocalDate createdAt;
 

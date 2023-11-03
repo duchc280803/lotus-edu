@@ -1,5 +1,6 @@
 package com.example.duanthuctap.config;
 
+import com.example.duanthuctap.enums.VaiTroEnums;
 import com.example.duanthuctap.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -33,6 +34,13 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/account/**").permitAll()
+                        .requestMatchers("/api/v1/product/**").permitAll()
+                        .requestMatchers("/api/v1/type-product/**").permitAll()
+                        .requestMatchers("/api/v1/order-payment/**").permitAll()
+                        .requestMatchers("/api/v1/product-review/**").permitAll()
+                        .requestMatchers("/api/v1/payment/**").permitAll()
+                        .requestMatchers("/api/v1/orders/**").hasAnyAuthority(VaiTroEnums.ADMIN.name())
+                        .requestMatchers("/api/v1/cart/**").permitAll()
                         .anyRequest()
                         .authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

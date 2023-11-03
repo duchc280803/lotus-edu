@@ -1,12 +1,14 @@
 package com.example.duanthuctap.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -22,11 +24,14 @@ public class Orders {
     @Column(name = "order_id")
     private int orderId;
 
-    @Column(name = "original_price")
-    private Double originalPrice;
+    @Column(name = "code_oder")
+    private String codeOrder;
 
-    @Column(name = "actual_price")
-    private Double actualPrice;
+    @Column(name = "total_price")
+    private Long totalPrice;
+
+    @Column(name = "delivery_price")
+    private Long deliveryPrice;
 
     @Column(name = "full_name")
     private String fullName;
@@ -41,27 +46,40 @@ public class Orders {
     private String address;
 
     @Column(name = "created_at")
-    private Timestamp createdAt;
+    private LocalDate createdAt;
+
+    @Column(name = "date_of_payment")
+    private LocalDate dateOfPayment;
+
+    @Column(name = "delivery_date")
+    private LocalDate deliveryDate;
+
+    @Column(name = "received_date")
+    private LocalDate receivedDate;
 
     @Column(name = "update_at")
-    private Timestamp updateAt;
-
-    @ManyToOne
-    @JoinColumn(name = "payment_id")
-    private Payment payment;
+    private LocalDate updateAt;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonBackReference
     private User user;
 
     @ManyToOne
     @JoinColumn(name = "staff_id")
+    @JsonBackReference
     private Staff staff;
 
     @ManyToOne
     @JoinColumn(name = "order_status_id")
+    @JsonBackReference
     private OrderStatus orderStatus;
 
     @OneToMany(mappedBy = "orders", fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<OrderDetail> orderDetailList;
+
+    @OneToMany(mappedBy = "orders", fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<Payment> paymentList;
 }

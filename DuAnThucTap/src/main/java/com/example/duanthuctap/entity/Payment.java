@@ -1,5 +1,6 @@
 package com.example.duanthuctap.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,6 +26,9 @@ public class Payment {
     @Column(name = "payment_method")
     private String paymentMethod;
 
+    @Column(name = "amount_param")
+    private Long amountParam;
+
     @Column(name = "status")
     private Integer status;
 
@@ -34,7 +38,9 @@ public class Payment {
     @Column(name = "update_at")
     private LocalDate updateAt;
 
-    @OneToMany(mappedBy = "payment", fetch = FetchType.LAZY)
-    private List<Orders> ordersList;
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    @JsonBackReference
+    private Orders orders;
 
 }

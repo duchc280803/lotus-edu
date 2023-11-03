@@ -1,5 +1,6 @@
 package com.example.duanthuctap.service;
 
+import com.example.duanthuctap.dto.request.ForgotPassword;
 import com.example.duanthuctap.dto.request.LoginRequest;
 import com.example.duanthuctap.dto.request.RegisterRequest;
 import com.example.duanthuctap.dto.response.MessageResponse;
@@ -12,9 +13,15 @@ public interface UserService {
 
     MessageResponse register(RegisterRequest registerRequest);
 
+    MessageResponse forgotPassword(ForgotPassword forgotPassword);
+
     Account updateToken(String username);
 
-    MessageResponse sendConfirmEmail(RegisterRequest registerRequest);
+    MessageResponse sendConfirmEmailRegister(String email);
 
-    String confirmationCode();
+    MessageResponse sendConfirmEmailForgotPassWord(String email);
+
+    String confirmationCodeRegister();
+
+    String confirmationCodeForgotPassWord();
 }

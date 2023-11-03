@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -26,22 +27,19 @@ public class Product {
     private String nameProduct;
 
     @Column(name = "price")
-    private Double price;
-
-    @Column(name = "avartar_image_product")
-    private String avartarImageProduct;
+    private BigDecimal price;
 
     @Column(name = "title")
     private String title;
-
-    @Column(name = "discount")
-    private Integer discount;
 
     @Column(name = "status")
     private Integer status;
 
     @Column(name = "number_of_views")
     private Integer numberOfViews;
+
+    @Column(name = "quantity")
+    private Integer quantity;
 
     @Column(name = "created_at")
     private LocalDate createdAt;
@@ -64,5 +62,11 @@ public class Product {
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private List<CartItem> cartItemList;
+
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    private List<Size> sizeList;
+
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    private List<Sole> soleList;
 
 }

@@ -1,11 +1,13 @@
 package com.example.duanthuctap.service.impl;
 
+import com.example.duanthuctap.dto.request.ForgotPassword;
 import com.example.duanthuctap.dto.request.LoginRequest;
 import com.example.duanthuctap.dto.request.RegisterRequest;
 import com.example.duanthuctap.dto.response.MessageResponse;
 import com.example.duanthuctap.dto.response.TokenResponse;
 import com.example.duanthuctap.entity.Account;
 import com.example.duanthuctap.entity.Decentralization;
+import com.example.duanthuctap.enums.VaiTroEnums;
 import com.example.duanthuctap.jwt.JwtService;
 import com.example.duanthuctap.model.UserDetailsCustom;
 import com.example.duanthuctap.repository.AccountRepository;
@@ -24,6 +26,8 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -48,6 +52,11 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private JavaMailSender javaMailSender;
 
+    private Map<String, String> codeMap = new HashMap<>();
+
+    /**
+     * Login vào software
+     **/
     @Override
     public TokenResponse login(LoginRequest loginRequest) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
@@ -71,22 +80,21 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    /**
+     * Register account
+     **/
     @Override
     public MessageResponse register(RegisterRequest registerRequest) {
-        Optional<Account> optionalPhatTu = accountRepository.findByUserName(registerRequest.getUsername());
+        Optional<Account> optionalAccount = accountRepository.findByUserName(registerRequest.getUsername());
 
-        if (optionalPhatTu.isPresent()) {
+        if (optionalAccount.isPresent()) {
             return MessageResponse.builder().message("Tài khoản đã tồn tại").build();
         }
 
-        Optional<Decentralization> quyenHan = decentralizationRepository.findByAuthorityName(registerRequest.getAuthorityName());
+        Optional<Decentralization> quyenHan = decentralizationRepository.findByAuthorityName(VaiTroEnums.USER);
 
-        if (quyenHan.isEmpty()) {
-            return MessageResponse.builder().message("Quyền hạn không hợp lệ").build();
-        }
-        System.out.println("Mã Mới Là: " + registerRequest.getConfirmCode().toString());
-        if (!registerRequest.getConfirmCode().equalsIgnoreCase(registerRequest.getCode())) {
-            return MessageResponse.builder().message("Mã xác nhận không chính xác").build();
+        if (!checkCode(registerRequest.getConfirmCode(), registerRequest.getEmail())) {
+            return MessageResponse.builder().message("Mã không khớp").build();
         }
 
         Account account = Account
@@ -105,6 +113,31 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    /**
+     * Quên mật khẩu
+     **/
+    @Override
+    public MessageResponse forgotPassword(ForgotPassword forgotPassword) {
+        Optional<Account> optionalAccount = accountRepository.findByEmail(forgotPassword.getEmail());
+        if (optionalAccount.isEmpty()) {
+            return MessageResponse.builder().message("Email không tồn tại").build();
+        }
+        optionalAccount.get().setPassword(forgotPassword.getPassword());
+        if (!forgotPassword.getEnterPassword().equals(forgotPassword.getPassword())) {
+            return MessageResponse.builder().message("Mật khẩu không khớp").build();
+        }
+        if (!checkCode(forgotPassword.getConfirmCode(), forgotPassword.getEmail())) {
+            return MessageResponse.builder().message("Mã không khớp").build();
+        }
+        optionalAccount.get().setUpdateAt(LocalDate.now());
+        optionalAccount.get().setPassword(passwordEncoder.encode(forgotPassword.getPassword()));
+        accountRepository.save(optionalAccount.get());
+        return MessageResponse.builder().message("Thay đổi mật khẩu thành công").build();
+    }
+
+    /**
+     * Khi đăng nhập vào gen ra token (token đó dùng để refresh lại token khi hết hạn)
+     **/
     @Override
     public Account updateToken(String username) {
         Optional<Account> findByUsername = accountRepository.findByUserName(username);
@@ -125,20 +158,56 @@ public class UserServiceImpl implements UserService {
         return resetPasswordToken;
     }
 
+    /**
+     * Check mã xem có đúng mã không
+     **/
+    public boolean checkCode(String code, String email) {
+        return codeMap.containsKey(code) && codeMap.get(code).equals(email);
+    }
+
+    /**
+     * Send mail khi đăng ký tài khoản
+     **/
     @Override
-    public MessageResponse sendConfirmEmail(RegisterRequest registerRequest) {
+    public MessageResponse sendConfirmEmailRegister(String email) {
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-        simpleMailMessage.setTo(registerRequest.getEmail());
+        simpleMailMessage.setTo(email);
         simpleMailMessage.setSubject("Xác nhận đăng ký tài khoản");
-        String confirmationCode = confirmationCode();
+        String confirmationCode = confirmationCodeRegister();
         simpleMailMessage.setText("Mã xác nhận của bạn là   " + confirmationCode);
         javaMailSender.send(simpleMailMessage);
-        registerRequest.setConfirmCode(confirmationCode);
+        codeMap.put(confirmationCode, email);
         return MessageResponse.builder().message("Send mã thành công").build();
     }
 
+    /**
+     * Send mail khi quên mật khẩu
+     **/
     @Override
-    public String confirmationCode() {
+    public MessageResponse sendConfirmEmailForgotPassWord(String email) {
+        String confirmationCode = confirmationCodeForgotPassWord();
+        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+        simpleMailMessage.setTo(email);
+        simpleMailMessage.setSubject("Mã xác nhận quên mật khẩu của bạn là:");
+        simpleMailMessage.setText("Mã xác nhận của bạn là   " + confirmationCode);
+        javaMailSender.send(simpleMailMessage);
+        codeMap.put(confirmationCode, email);
+        return MessageResponse.builder().message("Send mã thành công").build();
+    }
+
+    /**
+     * Gen code khi đăng ký account gồm 6 số
+     **/
+    @Override
+    public String confirmationCodeRegister() {
         return CodeGenerator.generateRandomCode(6);
+    }
+
+    /**
+    * Gen code khi quên mật khẩu gồm 15 số
+     **/
+    @Override
+    public String confirmationCodeForgotPassWord() {
+        return CodeGenerator.generateRandomCode(15);
     }
 }
